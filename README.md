@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖼️ One Click Image To URLs
 
-## Getting Started
+A simple and powerful Next.js API that converts uploaded image files into public image URLs using the [imgbb](https://imgbb.com/) API. Useful for quickly generating sharable image URLs from any file input, and includes automatic fallback notifications when upload fails.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Upload an image and instantly receive:
+  - **Original URL**
+  - **Medium-sized URL**
+  - **Thumbnail URL**
+- Built with **Next.js**
+- Integrated with **imgbb API**
+- Email notification support for failed uploads (SMTP configurable)
+
+---
+
+## 📦 Usage
+
+If you want to implement this in your own project, simply use the following function:
+
+```ts
+export default async function imageToUrl(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const API_KEY = "";
+
+  try {
+    const response = await fetch(
+      `https://api.imgbb.com/1/upload?key=${API_KEY}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const upload = await response.json();
+
+    if (upload.success) {
+      return {
+        originalUrl: upload.data.image?.url,
+        mediumUrl: upload.data.medium?.url,
+        thumbnailUrl: upload.data.thumb?.url,
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```ts
+git clone https://github.com/SumanPoU/One-Click-Image-To-Urls.git
+cd One-Click-Image-To-Urls
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+````ts
+# SMTP Settings (for failure notifications)
+SMTP_HOST=smtp.example.com       # e.g., smtp.gmail.com for Gmail
+SMTP_PORT=587                    # Use 465 for secure connections or 587 for unsecure
+SMTP_SECURE=false                # Set to true for secure SMTP connections
+SMTP_USER=your_smtp_username     # Your SMTP username (e.g., your Gmail address)
+SMTP_PASSWORD=your_smtp_password # Your SMTP password (e.g., Gmail app password)
 
-## Learn More
+# Notification email settings
+ADMIN_EMAIL_FROM="Your App <no-reply@example.com>"  # The "from" email address
+ADMIN_EMAIL_TO=admin@example.com                      # The email address to notify on failure
 
-To learn more about Next.js, take a look at the following resources:
+# API Endpoint URL (for Next.js API routes)
+NEXT_PUBLIC_API_URL="https://localhost:3000/api/img"  # Local or production URL of your Next.js app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```ts
+cp env.example .env
+````
 
-## Deploy on Vercel
+```ts
+# SMTP Settings (can be Gmail SMTP, Sendinblue, Mailgun, etc.)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Notification email settings
+ADMIN_EMAIL_FROM="Your App <no-reply@example.com>"
+```
