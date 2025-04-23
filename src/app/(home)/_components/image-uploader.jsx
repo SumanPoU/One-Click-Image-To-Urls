@@ -10,6 +10,8 @@ import {
   AlertTriangle,
   Loader2,
   RefreshCw,
+  ImageIcon,
+  LinkIcon,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -145,10 +147,10 @@ export default function ImageUploader() {
 
   // ===== URL HANDLING FUNCTIONS =====
 
-  // Get the best available URL based on priority: thumbnail > medium > original
+  // Get the best available URL based on priority: medium > thumbnail > original
   const getBestUrl = (urls) => {
     if (!urls) return "";
-    return urls.thumbnailUrl || urls.mediumUrl || urls.originalUrl || "";
+    return urls.mediumUrl || urls.thumbnailUrl || urls.originalUrl || "";
   };
 
   // Copy a URL to clipboard
@@ -229,7 +231,17 @@ export default function ImageUploader() {
 
   // ===== COMPONENT RENDERING =====
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl mx-auto p-4">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent dancing-text">
+          Image Uploader
+        </h1>
+        <p className="text-gray-600 mt-2 poppins-text">
+          Upload, share, and manage your images with ease
+        </p>
+      </div>
+
       {/* Drop Zone Area */}
       <DropZone
         isDragging={isDragging}
@@ -242,7 +254,7 @@ export default function ImageUploader() {
 
       {/* Image List and Controls */}
       {images.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Control Buttons */}
           <ControlPanel
             images={images}
@@ -257,7 +269,7 @@ export default function ImageUploader() {
           />
 
           {/* Image Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {images.map((image) => (
               <ImageCard
                 key={image.id}
@@ -289,10 +301,10 @@ function DropZone({
 }) {
   return (
     <div
-      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
         isDragging
-          ? "border-purple-500 bg-purple-50"
-          : "border-gray-300 hover:border-purple-400"
+          ? "border-purple-500 bg-purple-50 shadow-lg scale-[1.02]"
+          : "border-gray-300 hover:border-purple-400 hover:shadow-md"
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -307,15 +319,20 @@ function DropZone({
         multiple
         onChange={handleFileChange}
       />
-      <div className="flex flex-col items-center justify-center space-y-3">
-        <UploadCloud className="h-12 w-12 text-gray-400" />
-        <h3 className="text-lg font-medium nunito-text">
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <div className="p-4 bg-gradient-to-br from-purple-100 to-cyan-100 rounded-full">
+          <UploadCloud className="h-12 w-12 text-purple-500" />
+        </div>
+        <h3 className="text-xl font-medium nunito-text bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent">
           Drag and drop your images here
         </h3>
-        <p className="text-sm text-gray-500 poppins-text">
-          or <span className="text-purple-500 font-medium">browse files</span>
+        <p className="text-sm text-gray-600 poppins-text">
+          or{" "}
+          <span className="text-purple-500 font-medium hover:underline">
+            browse files
+          </span>
         </p>
-        <p className="text-xs text-gray-400 poppins-text">
+        <p className="text-xs text-gray-400 poppins-text px-4 py-2 bg-gray-50 rounded-full">
           Supports: JPG, PNG, GIF, WEBP (Max 32MB)
         </p>
       </div>
@@ -336,15 +353,15 @@ function ControlPanel({
   resetAll,
 }) {
   return (
-    <div className="flex flex-wrap justify-between items-center gap-2">
+    <div className="flex flex-wrap justify-between items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg shadow-sm">
       {/* Image Count and Upload Status */}
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-medium poppins-text">
+        <h3 className="text-lg font-medium playfair-text">
           {totalImages} {totalImages === 1 ? "Image" : "Images"}
         </h3>
         {successfulUploads > 0 && (
-          <span className="text-sm text-green-600 poppins-text">
-            ({successfulUploads}/{totalImages} uploaded)
+          <span className="text-sm text-green-600 poppins-text bg-green-50 px-2 py-0.5 rounded-full">
+            {successfulUploads}/{totalImages} uploaded
           </span>
         )}
       </div>
@@ -355,48 +372,48 @@ function ControlPanel({
           <div className="flex gap-2">
             <button
               onClick={copyAllUrls}
-              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-md font-medium poppins-text flex items-center gap-1"
+              className="px-3 py-1.5 text-sm bg-white hover:bg-gray-50 rounded-md font-medium poppins-text flex items-center gap-1 border border-gray-200 shadow-sm transition-all hover:shadow"
             >
               {bulkCopied === "plain" ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  Copied!
+                  <Check className="h-4 w-4 text-green-500" />
+                  <span className="text-green-600">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-4 w-4 text-purple-500" />
                   Copy All URLs
                 </>
               )}
             </button>
             <button
               onClick={copyAsJson}
-              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-md font-medium poppins-text flex items-center gap-1"
+              className="px-3 py-1.5 text-sm bg-white hover:bg-gray-50 rounded-md font-medium poppins-text flex items-center gap-1 border border-gray-200 shadow-sm transition-all hover:shadow"
             >
               {bulkCopied === "json" ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  Copied!
+                  <Check className="h-4 w-4 text-green-500" />
+                  <span className="text-green-600">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-4 w-4 text-purple-500" />
                   As JSON
                 </>
               )}
             </button>
             <button
               onClick={copyForDatabase}
-              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-md font-medium poppins-text flex items-center gap-1"
+              className="px-3 py-1.5 text-sm bg-white hover:bg-gray-50 rounded-md font-medium poppins-text flex items-center gap-1 border border-gray-200 shadow-sm transition-all hover:shadow"
             >
               {bulkCopied === "db" ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  Copied!
+                  <Check className="h-4 w-4 text-green-500" />
+                  <span className="text-green-600">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-4 w-4 text-purple-500" />
                   For DB
                 </>
               )}
@@ -409,13 +426,13 @@ function ControlPanel({
           <button
             onClick={uploadAllImages}
             disabled={images.every((img) => img.status !== "idle")}
-            className="px-4 py-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-md font-medium poppins-text disabled:opacity-50"
+            className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded-md font-medium poppins-text disabled:opacity-50 shadow-sm hover:shadow transition-all hover:translate-y-[-1px]"
           >
             Upload All
           </button>
           <button
             onClick={resetAll}
-            className="px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-md font-medium poppins-text flex items-center gap-1"
+            className="px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-md font-medium poppins-text flex items-center gap-1 transition-all hover:shadow"
           >
             <RefreshCw className="h-4 w-4" />
             Reset
@@ -436,9 +453,9 @@ function ImageCard({
   copiedId,
 }) {
   return (
-    <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
+    <div className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all">
       {/* Image Preview */}
-      <div className="relative h-40 bg-gray-100">
+      <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100">
         <Image
           src={image.preview || "/placeholder.svg"}
           alt="Preview"
@@ -446,45 +463,52 @@ function ImageCard({
           className="object-contain"
         />
 
-        {/* Delete Button - Made larger and more visible */}
+        {/* Delete Button */}
         <button
           onClick={() => removeImage(image.id)}
-          className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 border border-gray-200"
+          className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 border border-gray-200 transition-all hover:scale-105"
           aria-label="Remove image"
         >
           <X className="h-5 w-5 text-red-500" />
         </button>
+
+        {/* File Size Badge */}
+        <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded-md poppins-text">
+          {(image.file.size / 1024 / 1024).toFixed(2)} MB
+        </div>
       </div>
 
       {/* Image Details and Actions */}
-      <div className="p-3 space-y-2">
-        {/* File Name and Size */}
-        <p className="text-sm truncate poppins-text">{image.file.name}</p>
-        <p className="text-xs text-gray-500 poppins-text">
-          {(image.file.size / 1024 / 1024).toFixed(2)} MB
-        </p>
+      <div className="p-4 space-y-3">
+        {/* File Name */}
+        <div className="flex items-center gap-2">
+          <ImageIcon className="h-4 w-4 text-purple-500" />
+          <p className="text-sm truncate poppins-text font-medium">
+            {image.file.name}
+          </p>
+        </div>
 
         {/* Status-based UI */}
         {image.status === "idle" && (
           <button
             onClick={() => uploadImage(image.id)}
-            className="w-full px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-md text-sm font-medium poppins-text"
+            className="w-full px-3 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded-md text-sm font-medium poppins-text shadow-sm hover:shadow transition-all hover:translate-y-[-1px]"
           >
             Upload
           </button>
         )}
 
         {image.status === "uploading" && (
-          <div className="flex items-center justify-center py-1.5">
+          <div className="flex items-center justify-center py-2 px-3 bg-purple-50 rounded-md">
             <Loader2 className="h-5 w-5 text-purple-500 animate-spin" />
-            <span className="ml-2 text-sm text-gray-600 poppins-text">
+            <span className="ml-2 text-sm text-purple-700 poppins-text">
               Uploading...
             </span>
           </div>
         )}
 
         {image.status === "error" && (
-          <div className="flex items-center justify-center py-1.5 text-red-500">
+          <div className="flex items-center justify-center py-2 px-3 bg-red-50 rounded-md text-red-600">
             <AlertTriangle className="h-5 w-5" />
             <span className="ml-2 text-sm poppins-text">Upload failed</span>
           </div>
@@ -492,25 +516,28 @@ function ImageCard({
 
         {/* URL Display and Copy Options */}
         {image.status === "success" && image.urls && (
-          <div className="space-y-2">
-            {/* Best URL with Copy Button */}
+          <div className="space-y-3">
+            {/* Best URL with Copy Button - Prioritizing Medium URL */}
             <div className="flex items-center">
+              <div className="flex-shrink-0 bg-purple-100 p-1.5 rounded-l-md border border-r-0 border-purple-200">
+                <LinkIcon className="h-4 w-4 text-purple-600" />
+              </div>
               <input
                 type="text"
                 value={getBestUrl(image.urls)}
                 readOnly
-                className="flex-1 text-xs border rounded-l-md py-1.5 px-2 focus:outline-none"
+                className="flex-1 text-xs border border-purple-200 py-1.5 px-2 focus:outline-none focus:ring-1 focus:ring-purple-300 bg-white"
               />
               <button
                 onClick={() =>
                   copyToClipboard(getBestUrl(image.urls), image.id)
                 }
-                className="bg-gray-100 border border-l-0 rounded-r-md p-1.5"
+                className="bg-gradient-to-r from-purple-500 to-cyan-500 border border-l-0 border-purple-200 rounded-r-md p-1.5 hover:from-purple-600 hover:to-cyan-600 transition-all"
               >
                 {copiedId === image.id ? (
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-white" />
                 ) : (
-                  <Copy className="h-4 w-4 text-gray-500" />
+                  <Copy className="h-4 w-4 text-white" />
                 )}
               </button>
             </div>
@@ -522,7 +549,7 @@ function ImageCard({
                   onClick={() =>
                     copyToClipboard(image.urls.originalUrl, image.id)
                   }
-                  className="px-2 py-1 bg-gray-100 rounded text-gray-700 hover:bg-gray-200 poppins-text"
+                  className="px-2 py-1 bg-gray-100 rounded text-gray-700 hover:bg-gray-200 poppins-text transition-colors"
                 >
                   Original
                 </button>
@@ -532,7 +559,7 @@ function ImageCard({
                   onClick={() =>
                     copyToClipboard(image.urls.mediumUrl, image.id)
                   }
-                  className="px-2 py-1 bg-gray-100 rounded text-gray-700 hover:bg-gray-200 poppins-text"
+                  className="px-2 py-1 bg-purple-100 rounded text-purple-700 hover:bg-purple-200 poppins-text font-medium transition-colors ring-1 ring-purple-200"
                 >
                   Medium
                 </button>
@@ -542,7 +569,7 @@ function ImageCard({
                   onClick={() =>
                     copyToClipboard(image.urls.thumbnailUrl, image.id)
                   }
-                  className="px-2 py-1 bg-gray-100 rounded text-gray-700 hover:bg-gray-200 poppins-text"
+                  className="px-2 py-1 bg-gray-100 rounded text-gray-700 hover:bg-gray-200 poppins-text transition-colors"
                 >
                   Thumbnail
                 </button>
